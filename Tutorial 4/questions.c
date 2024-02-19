@@ -61,28 +61,41 @@ void display_categories(void)
 
     printf("\n");
 
-    for(int i=0; i<4; i++){
-        for(int j=0; j<3; j++){
-            if(questions[i+(j*4)].answered == false)
-                printf("%d\t", questions[i+(j*4)].value);
-            else{
-                printf("closed\t");
-            }
-        }
-        printf("\n");
-    }
+    // //print questions in categories
+    // for(int i=0; i<4; i++){
+    //     for(int j=0; j<3; j++){
+    //         if(questions[i+(j*4)].answered == false)
+    //             printf("%d\t", questions[i+(j*4)].value);
+    //         else{
+    //             printf("closed\t");
+    //         }
+    //     }
+    //     printf("\n");
+    // }
 }
 
 // Displays the question for the category and dollar value
 void display_question(char *category, int value)
 {
-
+    for(int i=0; i<NUM_QUESTIONS; i++){
+        if(strcmp_s(questions[i].category, category) == 0 && questions[i].value == value){
+            printf("%s\n", questions[i].question);
+            break;
+        }
+    }
 }
 
 // Returns true if the answer is correct for the question for that category and dollar value
 bool valid_answer(char *category, int value, char *answer)
 {
     // Look into string comparison functions
+    for(int i=0; i<NUM_QUESTIONS; i++){
+        if(strcmp_s(questions[i].category, category) && questions[i].value == value){
+            if(strcmp_s(questions[i].answer, answer) == 0){
+                return true;
+            }
+        }
+    }
     return false;
 }
 
@@ -90,5 +103,12 @@ bool valid_answer(char *category, int value, char *answer)
 bool already_answered(char *category, int value)
 {
     // lookup the question and see if it's already been marked as answered
+    for(int i=0; i<NUM_QUESTIONS; i++){
+        if(strcmp_s(questions[i].category, category) == 0 && questions[i].value == value){
+            if(questions[i].answered == true){
+                return true;
+            }
+        }
+    }
     return false;
 }
