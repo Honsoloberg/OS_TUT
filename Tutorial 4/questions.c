@@ -8,106 +8,153 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "questions.h"
+
+question questions[NUM_QUESTIONS];
+
+    char* GREEN_EC =  "\033[1;32m";
+    char* PINK_EC =  "\033[1;35m";
+    char* YELLOW_EC = "\033[1;33m";
+    char* RESET_EC =  "\033[0m";
+
 
 // Initializes the array of questions for the game
 void initialize_game(void)
 {
-    //Initilize programming questions
-    struct question P1 = {category[0], "In object-oriented programming, what term describes the process of creating a new instance of a class?", "instantiation", 100, false};
-    struct question P2 = {category[0], "In web development, what does CSS stand for?", "cascading style sheet", 200, false};
-    struct question P3 = {category[0], "Which programming language, developed by Apple Inc., is commonly used for building applications for IOS and macOS platforms?", "swift", 300, false};
-    struct question P4 = {category[0], "What programming paradigm emphasizes the use of mathematical function s and immutable data, avoiding side effects and mutable state?", "functional programming", 400, false};
+    // initialize each question struct and assign it to the questions array
+    for(int i = 0; i < NUM_QUESTIONS; i++){
+        strcpy(questions[i].category, categories[i % 3]);
+    	questions[i].answered = false;
+    }
 
-    questions[0] = P1;
-    questions[1] = P2;
-    questions[2] = P3;
-    questions[3] = P4;
+// Programming Category Questions
+strcpy(questions[0].category, "Programming");
+questions[0].value = 200;
+strcpy(questions[0].question, "This programming paradigm focuses on the use of functions without changing state or data");
+strcpy(questions[0].answer, "Functional Programming");
 
-    //Initilize Algorithms questions
-    struct question A1 = {category[1], "What sorting algorithm works by repeatedly stepping through the list, comparing adjacent elements and swapping them if they are in the wrong roder?", "bubble sort", 100, false};
-    struct question A2 = {category[1], "In computer science, what is the worst-case time complexity of the quicksort algorithm?", "O(n^2)", 200, false};
-    struct question A3 = {category[1], "What type of algorithm solves a problem by dividing it inot smaller subproblems, solving each subproblem recursively, and then combining the solutions?", "divide and conquer", 300, false};
-    struct questoin A4 = {category[1], "What algorithm, named after a British mathematician, is used to find the shortest path in a weighted graph?", "dijkstra's algorithm", 400, false};
+questions[1].value = 400;
+strcpy(questions[1].category, "Programming");
+strcpy(questions[1].question, "Named after a British mathematician, this form of notation expresses the logic of computer programs without specifying a particular programming language");
+strcpy(questions[1].answer, "BNF (Backus-Naur Form)");
 
-    questions[4] = A1;
-    questions[5] = A2;
-    questions[6] = A3;
-    questions[7] = A4;
+questions[2].value = 600;
+strcpy(questions[2].category, "Programming");
+strcpy(questions[2].question, "This term describes the concept of hiding the internal implementation details of a class and only showing the necessary features of an object to the outside world");
+strcpy(questions[2].answer, "Encapsulation");
 
-    //Initilize Databases questions
+questions[3].value = 800;
+strcpy(questions[3].category, "Programming");
+strcpy(questions[3].question, "This programming model allows for the execution of multiple threads or processes to optimize the use of CPU and processing time");
+strcpy(questions[3].answer, "Concurrency");
 
-    struct question D1 = {category[2], "In SQL, what keyword is used to retrieve data from a database table?", "select", 100, false};
-    struct question D2 = {category[2], "What type of database model organizes data into tables, where each table consists of rows and columns, with each row representing a record and each column representing a data attribute?", "relational database model", 200, false};
-    struct question D3 = {category[2], "What database system can store all data within one file?", "sqlite", 300, false};
-    struct question D4 = {category[2], "What term describes the process of breaking down a large databse into smaller, more manageable parts to improve performance and scalability?", "database sharding", 400, false};
+// Algorithms Category Questions
+questions[4].value = 200;
+strcpy(questions[4].category, "Algorithms");
+strcpy(questions[4].question, "This algorithm class is characterized by dividing a problem into subproblems of the same type and recursively solving them");
+strcpy(questions[4].answer, "Divide and Conquer");
 
-    questions[8] = D1;
-    questions[9] = D2;
-    questions[10] = D3;
-    questions[11] = D4;
+questions[5].value = 400;
+strcpy(questions[5].category, "Algorithms");
+strcpy(questions[5].question, "This famous algorithm is used to find the shortest path from a starting node to all other nodes in a weighted graph ____'s algorithm");
+strcpy(questions[5].answer, "Dijkstra");
+
+questions[6].value = 600;
+strcpy(questions[6].category, "Algorithms");
+strcpy(questions[6].question, "This sort algorithm improves on bubble sort by only passing through the list until no swaps are needed");
+strcpy(questions[6].answer, "Cocktail Shaker Sort");
+
+questions[7].value = 800;
+strcpy(questions[7].category, "Algorithms");
+strcpy(questions[7].question, "This advanced algorithm is used for text searching, allowing for mismatches, and is known for its efficiency in 'fuzzy' matching");
+strcpy(questions[7].answer, "KMP Algorithm"); //(Knuth-Morris-Pratt)
+
+// Databases Category Questions
+questions[8].value = 200;
+strcpy(questions[8].category, "Databases");
+strcpy(questions[8].question, "This type of database model organizes data into one or more tables where data types may be related to each other; these relationships help structure the data");
+strcpy(questions[8].answer, "Relational Database");
+
+questions[9].value = 400;
+strcpy(questions[9].category, "Databases");
+strcpy(questions[9].question, "This SQL clause is used to filter rows returned by the SELECT statement based on specified conditions");
+strcpy(questions[9].answer, "WHERE");
+
+questions[10].value = 600;
+strcpy(questions[10].category, "Databases");
+strcpy(questions[10].question, "In database management, this property ensures that transactions are processed reliably and that the database will keep its integrity even in the event of a failure");
+strcpy(questions[10].answer, "Atomicity");
+
+questions[11].value = 800;
+strcpy(questions[11].category, "Databases");
+strcpy(questions[11].question, "This NoSQL database type is optimized for retrieval and appending operations, making it ideal for analytics and real-time web applications");
+strcpy(questions[11].answer, "Document Store Database");
 
 }
 
 // Displays each of the remaining categories and question dollar values that have not been answered
-void display_categories(void)
-{
-    // print categories and dollar values for each unanswered question in questions array
+int display_categories(void) {
     
-    //print categories
-    for(int i=0; i<3; i++){
-        printf("%s\t", category[i]);
+    
+    // Print category headers
+    for (int i = 0; i < NUM_CATEGORIES; i++) {
+        printf("%s%15s%s ", YELLOW_EC, categories[i], RESET_EC);
     }
-
     printf("\n");
 
-    // //print questions in categories
-    // for(int i=0; i<4; i++){
-    //     for(int j=0; j<3; j++){
-    //         if(questions[i+(j*4)].answered == false)
-    //             printf("%d\t", questions[i+(j*4)].value);
-    //         else{
-    //             printf("closed\t");
-    //         }
-    //     }
-    //     printf("\n");
-    // }
-}
+    // Assuming an equal number of questions per category for simplicity
+    int questionsPerCategory = NUM_QUESTIONS / NUM_CATEGORIES;
+    
 
-// Displays the question for the category and dollar value
-void display_question(char *category, int value)
-{
-    for(int i=0; i<NUM_QUESTIONS; i++){
-        if(strcmp_s(questions[i].category, category) == 0 && questions[i].value == value){
-            printf("%s\n", questions[i].question);
-            break;
+    uint8_t anyRemaining = 0;
+
+    for (int q = 0; q < questionsPerCategory; q++) {
+        for (int c = 0; c < NUM_CATEGORIES; c++) {
+            int questionIndex = c * questionsPerCategory + q;
+            
+            if (!questions[questionIndex].answered) { //Unanswered
+                anyRemaining = 1;
+                printf("%s%15d%s ", GREEN_EC, questions[questionIndex].value, RESET_EC);
+            } else {
+                printf("%s%15s%s ", PINK_EC, "[XX]", RESET_EC); //Answered a.k.a used up
+            }
+
+        }
+    printf("\n");
+
+    }
+
+
+    //Return wether the game is terminated or not:
+    return anyRemaining;
+}                                                                                                   
+
+// Implement display_question
+void display_question(char *category, int value) {
+    for (int i = 0; i < NUM_QUESTIONS; i++) {
+        if (strcmp(questions[i].category, category) == 0 && questions[i].value == value) {
+            printf("%sQuestion: %s\n,",RESET_EC, questions[i].question);
+            return;
         }
     }
 }
 
-// Returns true if the answer is correct for the question for that category and dollar value
-bool valid_answer(char *category, int value, char *answer)
-{
-    // Look into string comparison functions
-    for(int i=0; i<NUM_QUESTIONS; i++){
-        if(strcmp_s(questions[i].category, category) && questions[i].value == value){
-            if(strcmp_s(questions[i].answer, answer) == 0){
-                return true;
-            }
+// Implement valid_answer
+bool valid_answer(char *category, int value, char *answer) {
+    for (int i = 0; i < NUM_QUESTIONS; i++) {
+        if (strcmp(questions[i].category, category) == 0 && questions[i].value == value) {
+            return strcmp(questions[i].answer, answer) == 0;
         }
     }
     return false;
 }
 
-// Returns true if the question has already been answered
-bool already_answered(char *category, int value)
-{
-    // lookup the question and see if it's already been marked as answered
-    for(int i=0; i<NUM_QUESTIONS; i++){
-        if(strcmp_s(questions[i].category, category) == 0 && questions[i].value == value){
-            if(questions[i].answered == true){
-                return true;
-            }
+// Implement already_answered
+bool already_answered(char *category, int value) {
+    for (int i = 0; i < NUM_QUESTIONS; i++) {
+        if (strcmp(questions[i].category, category) == 0 && questions[i].value == value) {
+            return questions[i].answered;
         }
     }
     return false;
