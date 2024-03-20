@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define NAME_MAX 256
 
 //queue node structure
 typedef struct Node {
-    char *name;
+    char name[NAME_MAX];
     int priority;
     int pid;
     int address;
@@ -37,13 +40,13 @@ int isEmpty(Queue* queue) {
 }
 
 //queue an element
-void enqueue(Queue* queue, char *name, int priority, int memory, int runtime) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
+void enqueue(Queue* queue, char name[], int priority, int memory, int runtime) {
+    Node* newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
     }
-    newNode->name = name;
+    strcpy(newNode->name, name);
     newNode->priority = priority;
     newNode->memory = memory;
     newNode->runtime = runtime;
@@ -71,6 +74,16 @@ void insert(Queue *queue,Node *node){
     }
 }
 
+// void insertHead(Queue *queue,Node *node){
+//     if(isEmpty(queue)){
+//         queue->head = node;
+//         queue->tail = node;
+//     }else{
+//         node->next = queue->head;
+//         queue->head = node;
+//     }
+// }
+
 //dequeue an element
 char *dequeue(Queue* queue) {
     if (isEmpty(queue)) {
@@ -84,12 +97,19 @@ char *dequeue(Queue* queue) {
     return name;
 }
 
-void rotate(Queue *queue){
-    Node *temp = queue->head;
+//move node from head of queue to tail
+void rotate(Queue *queue) {
+    if (isEmpty(queue) || queue->head == queue->tail) {
+        // If the queue is empty or has only one element, no rotation needed
+        return;
+    }
 
+    Node *temp = queue->head;
     queue->head = queue->head->next;
-    queue->tail->next = temp;
-    temp->next = NULL;
+    temp->next = NULL; 
+
+    queue->tail->next = temp; 
+    queue->tail = temp; 
 }
 
 //get the head element of the queue
@@ -118,41 +138,20 @@ void displayQueue(Queue* queue) {
 
 //free memory allocated to the queue
 void destroyQueue(Queue* queue) {
-    Node* current = queue->head;
-    while (current != NULL) {
-        Node* temp = current;
-        current = current->next;
-        free(temp);
-    }
-    free(queue);
-}
-
-void emptyQueue(Queue *queue){
-    Node* current = queue->head;
-    while (current != NULL) {
-        Node* temp = current;
-        current = current->next;
-        free(temp);
-    }
     queue->head = NULL;
     queue->tail = NULL;
 }
 
-void removeNode(Queue *queue, Node *node){
-    Node *current = queue->head;
-    Node *parent = NULL;
-    while(current != node){
-        parent = current;
-        current = current->next;
-        if(current == NULL){
-            return;
-        }
+void emptyQueue(Queue *queue){
+    if(isEmpty(queue)){
+        return;
     }
-    if(parent = NULL){
-        queue->head = current->next;
-        free(current);
-    }
-
-    parent->next = current->next;
-    free(current);
+    // Node* current = queue->head;
+    // while (current != NULL) {
+    //     Node* temp = current;
+    //     current = current->next;
+    //     free(temp);
+    // }
+    queue->head = NULL;
+    queue->tail = NULL;
 }
