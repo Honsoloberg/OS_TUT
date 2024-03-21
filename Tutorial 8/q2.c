@@ -34,13 +34,18 @@ Node *removePID(int pid, Queue *queue) {
 
     temp = current;
 
+    if(queue->head == current && current->next == NULL){
+        queue->head = NULL;
+        queue->tail = NULL;
+    }
+
     if (parent == NULL) {
         queue->head = current->next;
     } else {
         parent->next = current->next;
     }
 
-    if (current == queue->tail) {
+    if (current == queue->tail && parent != NULL) {
         queue->tail = parent;
     }
 
@@ -52,14 +57,20 @@ Node *removePID(int pid, Queue *queue) {
 // Check if there is a chunk of memory of specific size
 int checkMEM(int size) {
     int index = 0;
+    int check = 0;
     while (index < MEMORY) {
+        check = 0;
         if (avail_mem[index] == 0) {
             int i;
-            for (i = index; i < index + size; i++) {
-                if (i >= MEMORY || avail_mem[i] == 1)
+            for (i = index; i < (index + size); i++) {
+                if (avail_mem[(i%MEMORY)] == 1)
                     break;
             }
-            if (i == index + size)
+            check = i-index;
+            if(check < 0){
+                check += MEMORY;
+            }
+            if (check >= size)
                 return index;
             else
                 index = i;
@@ -71,16 +82,17 @@ int checkMEM(int size) {
 
 // Allocate a chunk of memory of a specific size at a specific address
 void allocate(int address, int size) {
-    for (int i = address; i < (size + address); i++) {
-        avail_mem[i] = 1;
+    int end = (size + address);
+    for (int i = address; i <= end; i++) {
+        avail_mem[(i%MEMORY)] = 1;
     }
 }
 
 // Deallocate memory at an address of specific size
 void deallocate(int address, int size) {
-    int end = (size + address)-1;
-    for (int i = address; i < end; i++) {
-        avail_mem[i] = 0;
+    int end = (size + address);
+    for (int i = address; i <= end; i++) {
+        avail_mem[(i%MEMORY)] = 0;
     }
 }
 
@@ -92,10 +104,14 @@ void finishWait() {
 }
 
 // Print contents of a node
-void printProcess(Node *process) {
-    printf("Process:\n");
-    printf("Name: %s | Priority: %d | PID: %d | MEM Size: %d | Runtime: %d |\n",
-           process->name, process->priority, process->pid, process->memory, process->runtime);
+void printProcess(Node *process, int type) {
+    if(type == 0){
+        printf("Process:\n");
+        printf("Name: %s | Priority: %d | PID: %d | MEM Size: %d | Runtime: %d |\n",
+             process->name, process->priority, process->pid, process->memory, process->runtime);
+    }else{
+        printf("Name: %s | MEM Size: %d | Runtime: %d | END!!!\n\n", process->name, process->memory, process->runtime);
+    }
 }
 
 //deallocate all memory
@@ -113,8 +129,10 @@ void child_handler(int signum) {
 
     while ((pid = waitpid(-1, NULL, WNOHANG)) > 0) {
         node = removePID(pid, running);
+        printProcess(node, 1);
         runcount--;
         deallocate(node->address, node->memory);
+        free(node);
     }
 }
 
@@ -136,7 +154,6 @@ int main() {
         exit(1);
     }
 
-    int i = 0;
     while (1) {
         fscanf(file, "%[^,], %d, %d, %d", name, &prio, &mem, &runTime);
         if (prio == 0) {
@@ -147,9 +164,7 @@ int main() {
         if(feof(file)){
             break;
         }
-        i++;
     }
-    printf("Processes Read: %d\n", i);
 
     fclose(file);
 
@@ -164,7 +179,6 @@ int main() {
             memIndex = checkMEM(current->memory);
 
             if (memIndex >= 0) {
-                printProcess(current);
                 runcount++;
                 dequeue(priority);
                 allocate(memIndex, current->memory);
@@ -186,6 +200,7 @@ int main() {
                 }
 
                 current->pid = pid;
+                printProcess(current, 0);
                 insert(running, current);
             }
         }
@@ -196,17 +211,25 @@ int main() {
     destroyQueue(priority);
     emptyQueue(running);
     clearMEM();
+    runcount = 0;
 
     while(!isEmpty(secondary) || !isEmpty(running)){
+        // printf("------------------------------------------------------------1\n");
+        // displayQueue(secondary);
+        // printf("------------------------------------------------------------1\n");
         current = head(secondary);
 
         if(current != NULL){
             memIndex = checkMEM(current->memory);
 
             if(memIndex >= 0){
-                printProcess(current);
+                runcount++;
                 dequeue(secondary);
+                // printf("------------------------------------------------------------2\n");
+                // displayQueue(secondary);
+                // printf("------------------------------------------------------------2\n");
                 allocate(memIndex, current->memory);
+
                 current->address = memIndex;
 
                 pid = fork();
@@ -224,14 +247,17 @@ int main() {
                 }
 
                 current->pid = pid;
-                insert(running, current);
+                printProcess(current, 0);
                 sleep(1);
-                kill(pid, SIGINT);
+                kill(pid, SIGTSTP);
+                sleep(1);
+                insert(running, current);
+                printf(" ");
             }else{
                 current = head(running);
                 kill(current->pid, SIGCONT);
                 sleep(1);
-                kill(current->pid, SIGINT);
+                kill(current->pid, SIGTSTP);
                 rotate(running);
             }
         }       

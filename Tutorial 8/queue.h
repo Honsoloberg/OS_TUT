@@ -36,7 +36,11 @@ Queue* createQueue() {
 
 //check if the queue is empty
 int isEmpty(Queue* queue) {
-    return queue->head == NULL;
+    if(queue == NULL){
+        perror("SHIT FUCK");
+        exit(1);
+    }
+    return (queue->head == NULL);
 }
 
 //queue an element
@@ -68,7 +72,7 @@ void insert(Queue *queue,Node *node){
         queue->head = node;
         queue->tail = node;
     }else{
-        node->next = NULL;
+        // node->next = NULL;
         queue->tail->next = node;
         queue->tail = node;
     }
@@ -85,21 +89,19 @@ void insert(Queue *queue,Node *node){
 // }
 
 //dequeue an element
-char *dequeue(Queue* queue) {
+void dequeue(Queue* queue) {
     if (isEmpty(queue)) {
         printf("Queue is empty!\n");
         exit(1);
     }
-    Node* temp = queue->head;
-    char *name = temp->name;
     queue->head = queue->head->next;
-    free(temp);
-    return name;
+    // free(temp);
+    return;
 }
 
 //move node from head of queue to tail
 void rotate(Queue *queue) {
-    if (isEmpty(queue) || queue->head == queue->tail) {
+    if (isEmpty(queue) || queue->head == queue->tail || queue->tail == NULL) {
         // If the queue is empty or has only one element, no rotation needed
         return;
     }
@@ -131,6 +133,8 @@ void displayQueue(Queue* queue) {
     Node* current = queue->head;
     while (current != NULL) {
         printf("%s \n", current->name);
+        printf("%p, \n", current);
+        printf("%p \n", current->next);
         current = current->next;
     }
     printf("\n");
@@ -140,18 +144,19 @@ void displayQueue(Queue* queue) {
 void destroyQueue(Queue* queue) {
     queue->head = NULL;
     queue->tail = NULL;
+    free(queue);
 }
 
 void emptyQueue(Queue *queue){
     if(isEmpty(queue)){
         return;
     }
-    // Node* current = queue->head;
-    // while (current != NULL) {
-    //     Node* temp = current;
-    //     current = current->next;
-    //     free(temp);
-    // }
+    Node* current = queue->head;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
     queue->head = NULL;
     queue->tail = NULL;
 }
