@@ -36,11 +36,7 @@ Queue* createQueue() {
 
 //check if the queue is empty
 int isEmpty(Queue* queue) {
-<<<<<<< Updated upstream
-    if(queue == NULL){
-=======
     if (queue == NULL) {
->>>>>>> Stashed changes
         perror("SHIT FUCK");
         exit(1);
     }
@@ -49,11 +45,7 @@ int isEmpty(Queue* queue) {
 
 //queue an element
 void enqueue(Queue* queue, char name[], int priority, int memory, int runtime) {
-<<<<<<< Updated upstream
-    Node* newNode = (Node *)malloc(sizeof(Node));
-=======
     Node* newNode = (Node*)malloc(sizeof(Node));
->>>>>>> Stashed changes
     if (newNode == NULL) {
         printf("Memory allocation failed!\n");
         exit(1);
@@ -81,13 +73,8 @@ void insert(Queue* queue, Node* node) {
     if (isEmpty(queue)) {
         queue->head = node;
         queue->tail = node;
-<<<<<<< Updated upstream
-    }else{
-        // node->next = NULL;
-=======
     }
     else {
->>>>>>> Stashed changes
         queue->tail->next = node;
         queue->tail = node;
     }
@@ -109,26 +96,6 @@ void dequeue(Queue* queue) {
         printf("Queue is empty!\n");
         exit(1);
     }
-<<<<<<< Updated upstream
-    queue->head = queue->head->next;
-    // free(temp);
-    return;
-}
-
-//move node from head of queue to tail
-void rotate(Queue *queue) {
-    if (isEmpty(queue) || queue->head == queue->tail || queue->tail == NULL) {
-        // If the queue is empty or has only one element, no rotation needed
-        return;
-    }
-
-    Node *temp = queue->head;
-    queue->head = queue->head->next;
-    temp->next = NULL; 
-
-    queue->tail->next = temp; 
-    queue->tail = temp; 
-=======
     queue->head = queue->head->next;
     // free(temp);
     return;
@@ -147,7 +114,6 @@ void rotate(Queue* queue) {
 
     queue->tail->next = temp;
     queue->tail = temp;
->>>>>>> Stashed changes
 }
 
 
@@ -169,13 +135,7 @@ void displayQueue(Queue* queue) {
     printf("Node Locn   Name        Process    Memory   Next Ptr  RunCountLeft\n");
     Node* current = queue->head;
     while (current != NULL) {
-<<<<<<< Updated upstream
-        printf("%s \n", current->name);
-        printf("%p, \n", current);
-        printf("%p \n", current->next);
-=======
         printf("%p %10s %10d %10d %10p %10d\n", current, current->name, current->pid, current->memory, current->next, current->runtime);
->>>>>>> Stashed changes
         current = current->next;
     }
     printf("\n");
@@ -188,13 +148,8 @@ void destroyQueue(Queue* queue) {
     free(queue);
 }
 
-<<<<<<< Updated upstream
-void emptyQueue(Queue *queue){
-    if(isEmpty(queue)){
-=======
 void emptyQueue(Queue* queue) {
     if (isEmpty(queue)) {
->>>>>>> Stashed changes
         return;
     }
     Node* current = queue->head;

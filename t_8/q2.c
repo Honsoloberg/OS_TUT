@@ -84,11 +84,7 @@ int checkMEM(int size) {
 // Allocate a chunk of memory of a specific size at a specific address
 void allocate(int address, int size) {
     int end = (size + address);
-<<<<<<< Updated upstream
-    for (int i = address; i <= end; i++) {
-=======
     for (int i = address; i < end; i++) {
->>>>>>> Stashed changes
         avail_mem[(i%MEMORY)] = 1;
     }
 }
@@ -96,11 +92,7 @@ void allocate(int address, int size) {
 // Deallocate memory at an address of specific size
 void deallocate(int address, int size) {
     int end = (size + address);
-<<<<<<< Updated upstream
-    for (int i = address; i <= end; i++) {
-=======
     for (int i = address; i < end; i++) {
->>>>>>> Stashed changes
         avail_mem[(i%MEMORY)] = 0;
     }
 }
@@ -115,12 +107,7 @@ void finishWait() {
 // Print contents of a node
 void printProcess(Node *process, int type) {
     if(type == 0){
-<<<<<<< Updated upstream
-        printf("Process:\n");
-        printf("Name: %s | Priority: %d | PID: %d | MEM Size: %d | Runtime: %d |\n",
-=======
         printf("Process Name: %s | Priority: %d | PID: %d | MEM Size: %d | Runtime: %d | EXECUTING\n",
->>>>>>> Stashed changes
              process->name, process->priority, process->pid, process->memory, process->runtime);
     }else{
         printf("Name: %s | MEM Size: %d | Runtime: %d | END!!!\n\n", process->name, process->memory, process->runtime);
@@ -134,20 +121,13 @@ void clearMEM(){
     }
 }
 
-<<<<<<< Updated upstream
-=======
 #ifdef SHOULD_NOT_BE_HERE
->>>>>>> Stashed changes
 // Utilize interrupts when a child finishes executing:
 // Remove the node and deallocate memory
 void child_handler(int signum) {
     int pid;
     Node *node;
-<<<<<<< Updated upstream
-
-=======
     printf("Child finished\n");
->>>>>>> Stashed changes
     while ((pid = waitpid(-1, NULL, WNOHANG)) > 0) {
         node = removePID(pid, running);
         printProcess(node, 1);
@@ -178,13 +158,9 @@ int main() {
     }
 
     while (1) {
-<<<<<<< Updated upstream
-        fscanf(file, "%[^,], %d, %d, %d", name, &prio, &mem, &runTime);
-=======
         //read name, priority, memory, runtime from the comma delimited file
         fscanf(file, "%[^,], %d, %d, %d\n", name, &prio, &mem, &runTime);
         printf("name=%s, prio=%d, mem=%d, runtime=%d len=%lu\n", name, prio,mem,runTime,strlen(name));
->>>>>>> Stashed changes
         if (prio == 0) {
             enqueue(priority, name, prio, mem, runTime);
         } else {
@@ -199,18 +175,11 @@ int main() {
 
 #ifdef SHOULD_NOT_BE_HERE
     signal(SIGCHLD, child_handler);
-<<<<<<< Updated upstream
-
-    int memIndex = 0;
-    int pid = 0;
-    Node *current;
-=======
 #endif
     int memIndex = 0;
     int pid = 0;
     Node *current;
     Node *node;
->>>>>>> Stashed changes
     while (!isEmpty(priority)) {
         current = head(priority);
         if (current != NULL) {
@@ -232,13 +201,8 @@ int main() {
                 if (pid == 0) {
                     char runtime_str[20];
                     snprintf(runtime_str, sizeof(runtime_str), "%d", current->runtime);
-<<<<<<< Updated upstream
-                    execl("./sigtrap.exe", "sigtrap.exe", runtime_str, NULL);
-                    perror("Exec Error");
-=======
                     execl("./process", "process", NULL);
                     perror("Process Exec Error (primary)");
->>>>>>> Stashed changes
                     exit(1);
                 }
 
@@ -369,66 +333,3 @@ displayQueue(running);
     return 0;
 }
 
-<<<<<<< Updated upstream
-    finishWait();
-
-    destroyQueue(priority);
-    emptyQueue(running);
-    clearMEM();
-    runcount = 0;
-
-    while(!isEmpty(secondary) || !isEmpty(running)){
-        // printf("------------------------------------------------------------1\n");
-        // displayQueue(secondary);
-        // printf("------------------------------------------------------------1\n");
-        current = head(secondary);
-
-        if(current != NULL){
-            memIndex = checkMEM(current->memory);
-
-            if(memIndex >= 0){
-                runcount++;
-                dequeue(secondary);
-                // printf("------------------------------------------------------------2\n");
-                // displayQueue(secondary);
-                // printf("------------------------------------------------------------2\n");
-                allocate(memIndex, current->memory);
-
-                current->address = memIndex;
-
-                pid = fork();
-                if(pid < 0){
-                    perror("Fork Error Second");
-                    exit(1);
-                }
-
-                if (pid == 0) {
-                    char runtime_str[20];
-                    snprintf(runtime_str, sizeof(runtime_str), "%d", current->runtime);
-                    execl("./sigtrap.exe", "sigtrap.exe", runtime_str, NULL);
-                    perror("Exec Error");
-                    exit(1);
-                }
-
-                current->pid = pid;
-                printProcess(current, 0);
-                sleep(1);
-                kill(pid, SIGTSTP);
-                sleep(1);
-                insert(running, current);
-                printf(" ");
-            }else{
-                current = head(running);
-                kill(current->pid, SIGCONT);
-                sleep(1);
-                kill(current->pid, SIGTSTP);
-                rotate(running);
-            }
-        }       
-    }
-
-    return 0;
-}
-
-=======
->>>>>>> Stashed changes
